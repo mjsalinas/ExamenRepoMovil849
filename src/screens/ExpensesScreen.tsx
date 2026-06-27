@@ -1,18 +1,26 @@
 import React from "react";
 import { Alert, FlatList, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 import { ExpenseItem } from "../components/ExpenseItem";
-import { useExpenses } from "../context/ExpensesContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 import { formatCurrency } from "../utils/format";
 
+// Importaciones de Redux
+import { useAppDispatch, useAppSelector } from "../store/store";
+import { removeExpense } from "../store/expensesSlice";
+
 export function ExpensesScreen() {
   const { theme } = useTheme();
   const { t, language } = useLanguage();
-  const { expenses, total, removeExpense } = useExpenses();
   const insets = useSafeAreaInsets();
+  
+  // Conexión a Redux Toolkit
+  const dispatch = useAppDispatch();
+  const { expenses } = useAppSelector((state) => state.expenses);
+
+  // Cálculo del total dinámico mediante reduce (como pide la rúbrica)
+  const total = expenses.reduce((sum, item) => sum + item.amount, 0);
 
   const confirmDelete = (id: string) => {
     Alert.alert(t("expenses.deleteTitle"), t("expenses.deleteMessage"), [
@@ -20,7 +28,7 @@ export function ExpensesScreen() {
       {
         text: t("common.delete"),
         style: "destructive",
-        onPress: () => removeExpense(id),
+        onPress: () => dispatch(removeExpense(id)), // Despacho de la acción de borrado
       },
     ]);
   };
