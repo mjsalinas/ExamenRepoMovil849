@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { loadExpenses, saveExpenses } from '../storage/storage';
+import { loadExpenses } from '../storage/storage';
 import type { Expense } from '../types/expense';
 
 interface ExpensesState {
@@ -53,26 +53,21 @@ export const expensesSlice = createSlice({
 
 const { addExpenseLocally, removeExpenseLocally, clearExpensesLocally } = expensesSlice.actions;
 
-export const addExpense = (data: Omit<Expense, 'id' | 'date'>) => async (dispatch: any, getState: any) => {
+export const addExpense = (data: Omit<Expense, 'id' | 'date'>) => (dispatch: any) => {
   const expense: Expense = {
     ...data,
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
     date: new Date().toISOString(),
   };
   dispatch(addExpenseLocally(expense));
-  const { expenses } = getState().expenses;
-  await saveExpenses(expenses);
 };
 
-export const removeExpense = (id: string) => async (dispatch: any, getState: any) => {
+export const removeExpense = (id: string) => (dispatch: any) => {
   dispatch(removeExpenseLocally(id));
-  const { expenses } = getState().expenses;
-  await saveExpenses(expenses);
 };
 
-export const clearExpenses = () => async (dispatch: any) => {
+export const clearExpenses = () => (dispatch: any) => {
   dispatch(clearExpensesLocally());
-  await saveExpenses([]);
 };
 
 export default expensesSlice.reducer;
