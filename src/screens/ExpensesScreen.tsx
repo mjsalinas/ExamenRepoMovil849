@@ -2,8 +2,11 @@ import React from "react";
 import { Alert, FlatList, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useDispatch, useSelector } from "react-redux";
+
 import { ExpenseItem } from "../components/ExpenseItem";
-import { useExpenses } from "../context/ExpensesContext";
+import { RootState, AppDispatch } from "../store";
+import { removeExpense } from "../store/expensesSlice";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 import { formatCurrency } from "../utils/format";
@@ -11,7 +14,8 @@ import { formatCurrency } from "../utils/format";
 export function ExpensesScreen() {
   const { theme } = useTheme();
   const { t, language } = useLanguage();
-  const { expenses, total, removeExpense } = useExpenses();
+  const { expenses, total } = useSelector((state: RootState) => state.expenses);
+  const dispatch = useDispatch<AppDispatch>();
   const insets = useSafeAreaInsets();
 
   const confirmDelete = (id: string) => {
@@ -20,7 +24,7 @@ export function ExpensesScreen() {
       {
         text: t("common.delete"),
         style: "destructive",
-        onPress: () => removeExpense(id),
+        onPress: () => dispatch(removeExpense(id)),
       },
     ]);
   };
