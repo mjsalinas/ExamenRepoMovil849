@@ -6,8 +6,6 @@ import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 import { CATEGORIES, CATEGORY_ICONS, type ExpenseCategory } from "../types/expense";
 import { formatCurrency } from "../utils/format";
-
-// Importaciones de Redux
 import { useAppSelector } from "../store/store";
 
 export function SummaryScreen() {
@@ -15,13 +13,10 @@ export function SummaryScreen() {
   const { t, language } = useLanguage();
   const insets = useSafeAreaInsets();
 
-  // Conexión directa a Redux Toolkit
   const { expenses } = useAppSelector((state) => state.expenses);
 
-  // Cálculo del total para las tarjetas estadísticas
   const total = expenses.reduce((sum, item) => sum + item.amount, 0);
 
-  // Mantenemos la estructura de optimización exacta del examen original
   const byCategory = useMemo(() => {
     const totals = {} as Record<ExpenseCategory, number>;
     for (const cat of CATEGORIES) totals[cat] = 0;
