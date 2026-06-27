@@ -1,17 +1,34 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-
 import { LanguageProvider } from "./src/context/LanguageContext";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 import { RootNavigator } from "./src/navigation/RootNavigator";
-
-// Importaciones de Redux
 import { Provider } from "react-redux";
-import { store } from "./src/store/store";
+import { store, useAppDispatch } from "./src/store/store";
+import { loadExpenses, saveExpenses } from "./src/storage/storage";
+import { setExpenses, setLoading } from "./src/store/expensesSlice";
 
 function ThemedApp() {
   const { isDark } = useTheme();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    loadExpenses().then((stored) => {
+      dispatch(setExpenses(stored));
+      dispatch(setLoading(false));
+    });
+  }, [dispatch]);
+
+  useEffect(() => {
+    const unsubscribe = store.subscribe(() => {
+      const state = store.getState();
+      void saveExpenses(state.expenses.expenses);
+    });
+    
+    return () => unsubscribe();
+  }, []);
+
   return (
     <>
       <StatusBar style={isDark ? "light" : "dark"} />
@@ -26,7 +43,6 @@ export default function App() {
       <SafeAreaProvider>
         <ThemeProvider>
           <LanguageProvider>
-            {/* Se elimino ExpensesProvider y se utiliza la Store global de Redux */}
             <ThemedApp />
           </LanguageProvider>
         </ThemeProvider>
