@@ -12,7 +12,10 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useExpenses } from "../context/ExpensesContext";
+import { useDispatch } from "react-redux";
+
+import { AppDispatch } from "../store";
+import { addExpense } from "../store/expensesSlice";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 import {
@@ -24,7 +27,7 @@ import {
 export function AddExpenseScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
-  const { addExpense } = useExpenses();
+  const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation<any>();
   const insets = useSafeAreaInsets();
 
@@ -50,7 +53,7 @@ export function AddExpenseScreen() {
       return;
     }
 
-    addExpense({ title: trimmed, amount: value, category });
+    dispatch(addExpense({ title: trimmed, amount: value, category }));
     reset();
     Alert.alert(t("add.saved"));
     navigation.navigate("ExpensesTab");
