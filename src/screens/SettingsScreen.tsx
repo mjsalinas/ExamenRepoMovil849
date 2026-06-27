@@ -11,7 +11,10 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useExpenses } from "../context/ExpensesContext";
+import { useDispatch } from "react-redux";
+
+import { AppDispatch } from "../store";
+import { clearExpenses } from "../store/expensesSlice";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 import type { Language } from "../i18n/translations";
@@ -19,7 +22,7 @@ import type { Language } from "../i18n/translations";
 export function SettingsScreen() {
   const { theme, isDark, toggleTheme } = useTheme();
   const { t, language, setLanguage } = useLanguage();
-  const { clearExpenses } = useExpenses();
+  const dispatch = useDispatch<AppDispatch>();
   const insets = useSafeAreaInsets();
 
   const onClear = () => {
@@ -28,7 +31,7 @@ export function SettingsScreen() {
       {
         text: t("common.confirm"),
         style: "destructive",
-        onPress: () => clearExpenses(),
+        onPress: () => dispatch(clearExpenses()),
       },
     ]);
   };
