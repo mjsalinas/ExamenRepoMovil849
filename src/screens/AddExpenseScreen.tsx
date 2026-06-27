@@ -1,32 +1,24 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-import { useExpenses } from "../context/ExpensesContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
-import {
-  CATEGORIES,
-  CATEGORY_ICONS,
-  type ExpenseCategory,
-} from "../types/expense";
+import { CATEGORIES, CATEGORY_ICONS, type ExpenseCategory } from "../types/expense";
+
+// Importaciones de Redux
+import { useAppDispatch } from "../store/store";
+import { addExpense } from "../store/expensesSlice";
 
 export function AddExpenseScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
-  const { addExpense } = useExpenses();
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  
+  // Inicialización del despachador de Redux
+  const dispatch = useAppDispatch();
 
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
@@ -50,10 +42,12 @@ export function AddExpenseScreen() {
       return;
     }
 
-    addExpense({ title: trimmed, amount: value, category });
+    // Despachamos la acción hacia Redux con la carga útil correspondiente
+    dispatch(addExpense({ title: trimmed, amount: value, category }));
+    
     reset();
     Alert.alert(t("add.saved"));
-    navigation.navigate("ExpensesTab");
+    navigation.navigate("ExpensesTab" as never);
   };
 
   return (
@@ -65,50 +59,28 @@ export function AddExpenseScreen() {
       ]}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={[styles.heading, { color: theme.text }]}>
-        {t("add.title")}
-      </Text>
+      <Text style={[styles.heading, { color: theme.text }]}>{t("add.title")}</Text>
 
-      <Text style={[styles.label, { color: theme.textSecondary }]}>
-        {t("add.name")}
-      </Text>
+      <Text style={[styles.label, { color: theme.textSecondary }]}>{t("add.name")}</Text>
       <TextInput
         value={title}
         onChangeText={setTitle}
         placeholder={t("add.namePlaceholder")}
         placeholderTextColor={theme.textSecondary}
-        style={[
-          styles.input,
-          {
-            backgroundColor: theme.card,
-            borderColor: theme.border,
-            color: theme.text,
-          },
-        ]}
+        style={[styles.input, { backgroundColor: theme.card, borderColor: theme.border, color: theme.text }]}
       />
 
-      <Text style={[styles.label, { color: theme.textSecondary }]}>
-        {t("add.amount")}
-      </Text>
+      <Text style={[styles.label, { color: theme.textSecondary }]}>{t("add.amount")}</Text>
       <TextInput
         value={amount}
         onChangeText={setAmount}
         placeholder={t("add.amountPlaceholder")}
         placeholderTextColor={theme.textSecondary}
         keyboardType="decimal-pad"
-        style={[
-          styles.input,
-          {
-            backgroundColor: theme.card,
-            borderColor: theme.border,
-            color: theme.text,
-          },
-        ]}
+        style={[styles.input, { backgroundColor: theme.card, borderColor: theme.border, color: theme.text }]}
       />
 
-      <Text style={[styles.label, { color: theme.textSecondary }]}>
-        {t("add.category")}
-      </Text>
+      <Text style={[styles.label, { color: theme.textSecondary }]}>{t("add.category")}</Text>
       <View style={styles.categories}>
         {CATEGORIES.map((cat) => {
           const active = cat === category;
@@ -118,10 +90,7 @@ export function AddExpenseScreen() {
               onPress={() => setCategory(cat)}
               style={[
                 styles.categoryChip,
-                {
-                  backgroundColor: active ? theme.primary : theme.card,
-                  borderColor: active ? theme.primary : theme.border,
-                },
+                { backgroundColor: active ? theme.primary : theme.card, borderColor: active ? theme.primary : theme.border },
               ]}
             >
               <Ionicons
@@ -129,12 +98,7 @@ export function AddExpenseScreen() {
                 size={16}
                 color={active ? theme.primaryText : theme.textSecondary}
               />
-              <Text
-                style={[
-                  styles.categoryText,
-                  { color: active ? theme.primaryText : theme.text },
-                ]}
-              >
+              <Text style={[styles.categoryText, { color: active ? theme.primaryText : theme.text }]}>
                 {t(`categories.${cat}`)}
               </Text>
             </Pressable>
@@ -142,14 +106,9 @@ export function AddExpenseScreen() {
         })}
       </View>
 
-      <Pressable
-        onPress={onSave}
-        style={[styles.saveButton, { backgroundColor: theme.primary }]}
-      >
+      <Pressable onPress={onSave} style={[styles.saveButton, { backgroundColor: theme.primary }]}>
         <Ionicons name="save-outline" size={20} color={theme.primaryText} />
-        <Text style={[styles.saveText, { color: theme.primaryText }]}>
-          {t("add.save")}
-        </Text>
+        <Text style={[styles.saveText, { color: theme.primaryText }]}>{t("add.save")}</Text>
       </Pressable>
     </ScrollView>
   );
@@ -160,32 +119,10 @@ const styles = StyleSheet.create({
   content: { padding: 20 },
   heading: { fontSize: 24, fontWeight: "800", marginBottom: 16 },
   label: { fontSize: 14, fontWeight: "600", marginBottom: 8, marginTop: 12 },
-  input: {
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 16,
-  },
+  input: { borderWidth: 1, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16 },
   categories: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  categoryChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    borderWidth: 1,
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
+  categoryChip: { flexDirection: "row", alignItems: "center", gap: 6, borderWidth: 1, borderRadius: 20, paddingVertical: 8, paddingHorizontal: 12 },
   categoryText: { fontSize: 14, fontWeight: "500" },
-  saveButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    borderRadius: 14,
-    paddingVertical: 16,
-    marginTop: 28,
-  },
+  saveButton: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: 14, paddingVertical: 16, marginTop: 28 },
   saveText: { fontSize: 16, fontWeight: "700" },
 });
