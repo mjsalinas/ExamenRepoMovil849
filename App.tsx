@@ -2,7 +2,9 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { ExpensesProvider } from "./src/context/ExpensesContext";
+import { Provider } from "react-redux";
+import { store } from "./src/store";
+
 import { LanguageProvider } from "./src/context/LanguageContext";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 import { RootNavigator } from "./src/navigation/RootNavigator";
@@ -22,9 +24,9 @@ export default function App() {
     <SafeAreaProvider>
       <ThemeProvider>
         <LanguageProvider>
-          <ExpensesProvider>
+          <Provider store={store}>
             <ThemedApp />
-          </ExpensesProvider>
+          </Provider>
         </LanguageProvider>
       </ThemeProvider>
     </SafeAreaProvider>
