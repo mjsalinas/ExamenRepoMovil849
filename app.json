@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Control de Gastos",
+    "slug": "control-de-gastos",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ceutec.controldegastos"
+    },
+    "android": {
+      "package": "com.ceutec.controldegastos",
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}
