@@ -3,7 +3,9 @@ import React, { useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useExpenses } from "../context/ExpensesContext";
+import { useSelector } from "react-redux";
+
+import { RootState } from "../store";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 import {
@@ -16,7 +18,7 @@ import { formatCurrency } from "../utils/format";
 export function SummaryScreen() {
   const { theme } = useTheme();
   const { t, language } = useLanguage();
-  const { expenses, total } = useExpenses();
+  const { expenses, total } = useSelector((state: RootState) => state.expenses);
   const insets = useSafeAreaInsets();
 
   const byCategory = useMemo(() => {
